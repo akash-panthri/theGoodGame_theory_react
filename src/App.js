@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
-import './App.css';
-
+import { useEffect, useState } from "react";
+import "./App.css";
+import SidePanel from "./components/SidePanel";
+import Error from "./components/Error";
 
 function App() {
   const [data, setData] = useState(null);
@@ -8,7 +9,7 @@ function App() {
   const [showSide, setShowSide] = useState(false);
   const [error, setError] = useState(null);
   const [qoutes, setQoutes] = useState(() => {
-    const savedQoutes = JSON.parse(localStorage.getItem('qoutelist'));
+    const savedQoutes = JSON.parse(localStorage.getItem("qoutelist"));
     return savedQoutes || [];
   });
 
@@ -16,37 +17,60 @@ function App() {
     setQoutes([...qoutes, newItem]);
   };
 
-  const fetchQuote=()=>{
-    fetch('https://ron-swanson-quotes.herokuapp.com/v2/quotes')
-    .then(response => response.json())
-    .then(data => {
-      setData(data);
-      setLoading(false);
-    })
-    .catch(err => {
-      setError(err);
-      setLoading(false);
-    });
-  }
+  const fetchQuote = () => {
+    fetch("https://ron-swanson-quotes.herokuapp.com/v2/quotes")
+      .then((response) => response.json())
+      .then((data) => {
+        setData(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err);
+        setLoading(false);
+      });
+  };
+  const sidePanelFunc = (e) => {
+    e.stopPropagation();
+    setShowSide((prev) => !prev);
+  };
   useEffect(() => {
-    fetchQuote()
+    fetchQuote();
   }, []);
   useEffect(() => {
-    localStorage.setItem('qoutelist', JSON.stringify(qoutes));
+    localStorage.setItem("qoutelist", JSON.stringify(qoutes));
   }, [qoutes]);
   return (
-    <div className="App">
-        <button  className={loading ? 'loading':'btn'} onClick={()=>setShowSide((prev)=> !prev)} >{showSide ?'Hide' : 'Show' } saved</button>
-      <div className="container">
-        <h3>Don't Laugh Challenge</h3>
-        <div id="quote" className="quote">
-{data}
+    <>
+    {error  && <Error error={error} />}
+      {showSide && <SidePanel qoutes={qoutes} />}
+      <div className="App" onClick={() => setShowSide(()=>false)}>
+        <button
+          className={loading ? "loading" : "btn"}
+          onClick={(e) => sidePanelFunc(e)}
+        >
+          {showSide ? "Hide" : "Show"} saved
+        </button>
+        <div className="container">
+          <h3>Quotes</h3>
+          <div id="quote" className="quote">
+            {data}
+          </div>
+          <button
+            id="quoteBtn"
+            className="btn"
+            onClick={() => fetchQuote()}
+          >
+            Get quote
+          </button>
+          <button
+            className="btn"
+            onClick={() => addItem(data)}
+          >
+            Save to list
+          </button>
         </div>
-        <button id="quoteBtn" className={loading ? 'loading':'btn'} onClick={()=>fetchQuote()}>Getquote</button>
-        <button  className={loading ? 'loading':'btn'} onClick={()=>addItem(data)} >Save to list</button>
-        
-    </div>
-    </div>
+      </div>
+    </>
   );
 }
 
