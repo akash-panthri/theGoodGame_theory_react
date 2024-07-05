@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 
+
 function App() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showSide, setShowSide] = useState(false);
   const [error, setError] = useState(null);
-  const [qoutes, setQoutes] = useState([]);
+  const [qoutes, setQoutes] = useState(() => {
+    const savedQoutes = JSON.parse(localStorage.getItem('qoutelist'));
+    return savedQoutes || [];
+  });
 
   const addItem = (newItem) => {
     setQoutes([...qoutes, newItem]);
@@ -24,15 +28,15 @@ function App() {
       setLoading(false);
     });
   }
- 
   useEffect(() => {
     fetchQuote()
-  
   }, []);
+  useEffect(() => {
+    localStorage.setItem('qoutelist', JSON.stringify(qoutes));
+  }, [qoutes]);
   return (
     <div className="App">
         <button  className={loading ? 'loading':'btn'} onClick={()=>setShowSide((prev)=> !prev)} >{showSide ?'Hide' : 'Show' } saved</button>
-
       <div className="container">
         <h3>Don't Laugh Challenge</h3>
         <div id="quote" className="quote">

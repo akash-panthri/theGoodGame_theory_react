@@ -1,0 +1,15 @@
+.sidepanel {
+  height: 100%;
+  width: 30vw;
+  position: fixed;
+  right: 0;
+  top: 0;
+  background: #bfaced;
+  /* display: block; */
+}
+
+.singleQuote {
+  padding: 3px 10px;
+  background: #f0f0f0;
+  border-bottom: 1px solid darkgrey;
+}
